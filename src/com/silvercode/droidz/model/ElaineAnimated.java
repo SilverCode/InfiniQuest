@@ -1,6 +1,7 @@
 package com.silvercode.droidz.model;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public class ElaineAnimated
@@ -34,6 +35,9 @@ public class ElaineAnimated
         this.frameTicker = 0l;
     }
     
+    public int getX() { return x; }
+    public int getY() { return y; }
+    
     public void update(long gameTime)
     {
     	if (gameTime > frameTicker + framePeriod)
@@ -50,5 +54,11 @@ public class ElaineAnimated
         
     	this.sourceRect.left = currentFrame * spriteWidth;
     	this.sourceRect.right = this.sourceRect.left + spriteWidth;
+    }
+    
+    public void draw(Canvas canvas)
+    {
+    	Rect destRect = new Rect(getX(), getY(), getX() + spriteWidth, getY() + spriteHeight);
+        canvas.drawBitmap(bitmap, sourceRect, destRect, null);
     }
 }

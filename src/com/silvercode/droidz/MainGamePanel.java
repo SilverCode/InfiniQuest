@@ -3,6 +3,7 @@ package com.silvercode.droidz;
 import android.app.Activity;
 import android.util.Log;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,13 +14,14 @@ import android.view.SurfaceView;
 
 import com.silvercode.driodz.model.components.Speed;
 import com.silvercode.droidz.model.Droid;
+import com.silvercode.droidz.model.ElaineAnimated;
 
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
 	private static final String TAG = MainGamePanel.class.getSimpleName();
 	
 	private MainThread thread;
-	private Droid droid;
+	private ElaineAnimated elaine;
     private String avgFps;
     
     public void setAvgFps(String avgFps)
@@ -32,15 +34,15 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 		super(context);		
 		getHolder().addCallback(this);
 		
-		droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine);
+        elaine = new ElaineAnimated(bitmap, 10, 50, 30, 47, 5, 5);
 		
 		thread = new MainThread(getHolder(), this);
 		
 		setFocusable(true);
 	}
 
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height)
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
 	{
 		// TODO Auto-generated method stub		
 	}
@@ -72,34 +74,19 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	{
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			droid.handleActionDown((int)event.getX(), (int)event.getY());
-			
 			if (event.getY() > getHeight() - 50)
 			{
 				thread.setRunning(false);				
 				((Activity)getContext()).finish();
 			}
-			else
-			{
-				Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
-			}
 		}
 		
 		if (event.getAction() == MotionEvent.ACTION_MOVE)
 		{
-			if (droid.isTouched())
-			{
-				droid.setX((int)event.getX());
-				droid.setY((int)event.getY());
-			}
 		}
 		
 		if (event.getAction() == MotionEvent.ACTION_UP)
 		{
-			if (droid.isTouched())
-			{
-				droid.setTouched(false);
-			}
 		}
 		
 		return true;
@@ -108,8 +95,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	protected void render(Canvas canvas)
 	{
 		canvas.drawColor(Color.BLACK);
-		droid.draw(canvas);
-        
+        elaine.draw(canvas);
 		displayFps(canvas, avgFps);
 	}
     
@@ -125,26 +111,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
 	public void update()
 	{
-        if (droid.getSpeed().getXDirection() == Speed.DIRECTION_RIGHT && droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth())
-        {
-            droid.getSpeed().toggleXDirection();
-        }
-        
-        if (droid.getSpeed().getXDirection() == Speed.DIRECTION_LEFT && droid.getX() - droid.getBitmap().getWidth() / 2 <= 0)
-        {
-            droid.getSpeed().toggleXDirection();
-        }
-        
-        if (droid.getSpeed().getYDirection() == Speed.DIRECTION_DOWN && droid.getY() + droid.getBitmap().getHeight() / 2 >= getHeight())
-        {
-            droid.getSpeed().toggleYDirection();
-        }
-        
-        if (droid.getSpeed().getYDirection() == Speed.DIRECTION_UP && droid.getY() - droid.getBitmap().getHeight() / 2 <= 0)
-        {
-            droid.getSpeed().toggleYDirection();
-        }
-        
-        droid.update();
+        elaine.update(System.currentTimeMillis());
 	}
 }
