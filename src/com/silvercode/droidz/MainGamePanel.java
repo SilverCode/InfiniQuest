@@ -15,14 +15,18 @@ import android.view.SurfaceView;
 import com.silvercode.driodz.model.components.Speed;
 import com.silvercode.droidz.model.Droid;
 import com.silvercode.droidz.model.ElaineAnimated;
+import com.silvercode.droidz.model.Explosion;
 
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
 	private static final String TAG = MainGamePanel.class.getSimpleName();
+    
+	private static final int EXPLOSION_SIZE = 100;
 	
 	private MainThread thread;
 	private ElaineAnimated elaine;
     private String avgFps;
+    private Explosion[] explosions;
     
     public void setAvgFps(String avgFps)
     {
@@ -49,6 +53,12 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
 	public void surfaceCreated(SurfaceHolder holder)
 	{
+        explosions = new Explosion[10];
+        for (int i = 0; i < explosions.length; i++)
+        {
+        	explosions[i] = null;
+        }
+        
 		thread.setRunning(true);
 		thread.start();
 	}
@@ -79,6 +89,21 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 				thread.setRunning(false);				
 				((Activity)getContext()).finish();
 			}
+            
+			int currentExplosion = 0;
+			Explosion explosion = explosions[currentExplosion];
+            
+			while (explosion != null && explosion.isAlive() && currentExplosion < explosions.length)
+			{
+				currentExplosion++;
+				explosion = explosions[currentExplosion];
+			}
+            
+			if (explosion == null || explosion.isDead())
+			{
+				explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(), (int)event.getY());
+                explosions[currentExplosion] = explosion;
+			}
 		}
 		
 		if (event.getAction() == MotionEvent.ACTION_MOVE)
@@ -96,6 +121,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	{
 		canvas.drawColor(Color.BLACK);
         elaine.draw(canvas);
+        for (int i = 0; i < explosions.length; i++)
+        {
+            if (explosions[i] != null)
+                explosions[i].draw(canvas);
+        }
 		displayFps(canvas, avgFps);
 	}
     
@@ -112,5 +142,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	public void update()
 	{
         elaine.update(System.currentTimeMillis());
+        
+        for (int i = 0; i < explosions.length; i++)
+        {
+            if (explosions[i] != null)
+                explosions[i].update();
+        }
 	}
 }
