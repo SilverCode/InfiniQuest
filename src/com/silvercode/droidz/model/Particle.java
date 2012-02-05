@@ -11,7 +11,7 @@ public class Particle
     
     public static final int DEFAULT_LIFETIME = 200;
     public static final int MAX_DIMENSION = 5;
-    public static final int MAX_SPEED = 10;
+    public static final int MAX_SPEED = 1;
     
     private int state;
     private float width;
@@ -90,4 +90,7 @@ public class Particle
 	{
 		return min + (max - min) * Math.random();
 	}
+    
+	public boolean isAlive() { return this.state == STATE_ALIVE; }
+	public boolean isDead() { return this.state == STATE_DEAD; }
 }

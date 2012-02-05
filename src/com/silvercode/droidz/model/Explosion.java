@@ -35,10 +35,18 @@ public class Explosion
     
     public void update()
     {
+        boolean allParticlesDead = true;
+        
     	for (int i = 0; i < this.particles.length; i++)
     	{
-            particles[i].update();
+            if (particles[i].isAlive())
+            {
+                particles[i].update();
+                allParticlesDead = false;
+            }
     	}
+        
+    	state = allParticlesDead ? STATE_DEAD : STATE_ALIVE;
     }
     
     public void draw(Canvas canvas)

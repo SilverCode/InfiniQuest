@@ -93,7 +93,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 			int currentExplosion = 0;
 			Explosion explosion = explosions[currentExplosion];
             
-			while (explosion != null && explosion.isAlive() && currentExplosion < explosions.length)
+            // Find the next available slot in the explosions queue
+			while (explosion != null && explosion.isAlive() && currentExplosion < explosions.length-1)
 			{
 				currentExplosion++;
 				explosion = explosions[currentExplosion];
@@ -101,6 +102,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
             
 			if (explosion == null || explosion.isDead())
 			{
+                Log.d(TAG, "Creating new explision at index " + currentExplosion);
 				explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(), (int)event.getY());
                 explosions[currentExplosion] = explosion;
 			}
