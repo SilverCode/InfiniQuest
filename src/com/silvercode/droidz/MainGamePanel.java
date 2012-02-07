@@ -82,6 +82,37 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 	
 	public boolean onTouchEvent(MotionEvent event)
 	{
+        int action = event.getActionMasked();
+        int ptrIndex = event.getActionIndex();
+        int ptrId = event.getPointerId(ptrIndex);
+            
+        switch (action)
+        {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
+        	{
+    			int currentExplosion = 0;
+    			Explosion explosion = explosions[currentExplosion];
+                        
+                // Find the next available slot in the explosions queue
+    			while (explosion != null && explosion.isAlive() && currentExplosion < explosions.length-1)
+    			{
+    				currentExplosion++;
+    				explosion = explosions[currentExplosion];
+    			}
+                        
+    			if (explosion == null || explosion.isDead())
+    			{
+    				explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(ptrIndex), (int)event.getY(ptrIndex));
+                    explosions[currentExplosion] = explosion;
+    			}
+                
+                break;
+        	}
+            default: break;
+        }
+        
+        /*
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
 			if (event.getY() > getHeight() - 50)
@@ -89,32 +120,32 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 				thread.setRunning(false);				
 				((Activity)getContext()).finish();
 			}
-            
+                
 			int currentExplosion = 0;
 			Explosion explosion = explosions[currentExplosion];
-            
+                    
             // Find the next available slot in the explosions queue
 			while (explosion != null && explosion.isAlive() && currentExplosion < explosions.length-1)
 			{
 				currentExplosion++;
 				explosion = explosions[currentExplosion];
 			}
-            
+                    
 			if (explosion == null || explosion.isDead())
 			{
-                Log.d(TAG, "Creating new explision at index " + currentExplosion);
 				explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(), (int)event.getY());
                 explosions[currentExplosion] = explosion;
 			}
-		}
 		
-		if (event.getAction() == MotionEvent.ACTION_MOVE)
-		{
-		}
-		
-		if (event.getAction() == MotionEvent.ACTION_UP)
-		{
-		}
+    		if (event.getAction() == MotionEvent.ACTION_MOVE)
+    		{
+    		}
+    		
+    		if (event.getAction() == MotionEvent.ACTION_UP)
+    		{
+    		}
+        }
+        */
 		
 		return true;
 	}
